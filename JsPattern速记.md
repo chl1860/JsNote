@@ -34,5 +34,6 @@
 ## 控制台工具
 * **Console** 对象是运行环境的一部分（宿主对象）
 * _console.log()_, _console.dir()_
+
 ## JsLint
 * 使用JsLint检查代码
