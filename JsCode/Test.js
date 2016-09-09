@@ -18,7 +18,14 @@ var fabonacci2 = function (n) {
   return fib
 }()
 
-// 改进后的带记忆功能的斐波那契函数
+/**
+ * Memorize function
+ * 
+ * @class memorizer
+ * @param {array} memo
+ * @param {func} fundamental
+ * @returns {array} result
+ */
 var memorizer = function (memo, fundamental) {
   var shell = function (n) {
     result = memo[n]
