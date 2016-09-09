@@ -1,0 +1,124 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Test</title>
+</head>
+<body>
+    <a href="javascript:;" id='test1' attr-tt="test1">test1</a>
+    <a href="javascript:;" id="test3" attr-mm="test3">test3</a>
+    <a href="javascript:;" id="test2" attr-tt="test2">test2</a>
+    <input attr-tt="test input1" value="" />
+    <input attr-mm="test input2" value="" />
+    <input attr-tt="test input3" value="" />
+    <script>
+    // Description: A common object which is used likely JQuery
+    // Author: Seven Chen
+    // Date: 08/30/2016
+    // Note:that would suit for most of the conditions except pages         containing iframe
+
+    (function(tagName, attr){
+        actsJs = function(tagName, attr) {
+            var self = this;
+        var d = document;
+            return {
+            /*copy the object*/
+            clone : function() {
+                var F = function() {};
+                F.prototype = self;
+                return new F();
+            },
+
+            /*extend function*/
+            extend:function(subType) {
+                var prototype = clone();
+                prototype.constructor = subType;
+                subType.prototype = prototype;
+            },
+
+            bind : function(eventName, func) {
+                debugger;
+                var elements = d.getElementsByTagName(tagName);
+                var len= elements.length;
+                if (elements) {
+                for (var i = 0; i < len; i++) {
+                    if (elements[i] && elements[i].attributes[attr]) {
+                    var elem = elements[i];
+                    var attrVal = elem.attributes[attr].value;
+
+                    /*this part is for event listener*/
+                    if (elem.addEventListener) {
+                        elem.addEventListener(eventName, function(e) {
+                        func(e.currentTarget);
+                        });
+                    }
+
+                    /*this part is for attchEvent*/
+                    if (elem.attachEvent) {
+                        elem.attachEvent("on" + eventName, function(e) {
+                        func(e.srcElement);
+                        })
+                    }
+                    }
+                }
+                }
+                return this;
+            }
+        };     
+    };
+
+(function(window){
+        var doc = function(){
+            var d = document;
+            var checkStateInterval;
+            var f;
+            /*private method to check page state*/
+            var runFunc = function() {
+                if (d.readyState == "loading") {
+                console.log('loading');
+                if (!checkStateInterval) {
+                    checkStateInterval = setInterval(runFunc, 1000);
+                }
+                }
+                if (d.readyState == "complete") {
+                clearInterval(checkStateInterval);
+                console.log('completed');
+                if (typeof f == "function") {
+                    f();
+                }
+                }
+            };
+            return{
+                ready: function(func) {
+                    if (func) {
+                        f = func;
+                    }
+                    d.onreadystatechange = runFunc();
+                },
+            };
+        };
+        window.$ = doc();
+    }(window))
+    }())
+
+    
+
+
+
+    // /*test methods*/
+    var f = function(elem) {
+      elem.value = elem.attributes["attr-tt"].value;
+    }
+    // var a = new actsJs("input", "attr-tt");
+    // var link = new actsJs('a', 'attr-tt');
+    $.ready(function() {
+      actsJs("input", "attr-tt").bind("blur", function(elem) {
+        f(elem);
+      });
+      actsJs('a', 'attr-tt').bind('click', function() {
+        alert('i am atrr-tt anchor');
+      })
+    });
+    </script>
+    
+</body>
+</html>

@@ -1,5 +1,6 @@
 # 高质量 Js 要点
 
+
 ## 编写可维护的代码
 
 #### 可维护的代码的特点：
@@ -27,17 +28,22 @@
 ##### 隐形全局对象：<br/>
 *任何不通过 var 声明的对象都会变成全局对象的一个属性*
 _*Note：*_ 一种反模式，在下面代码片段中，*a* 是局部变量，*b* 是全局变量<br/>
-`function foo(){
+
+```Javascript
+function foo(){
     var a = b = 0;
     //...
 }`
+```
+如果变量 *b* 已经声明，这种链式赋值写法是 Ok 的，比如:
 
-如果变量 *b* 已经声明，这种链式赋值写法是 Ok 的，比如：<br/>
-`function foo(){
+```Javascript
+function foo(){
     var a, b;
     //...
     a = b = 0; //both local
-}`
+}
+```
 
 避免使用全局变量的另一个原因是出于可移植性考虑
 
@@ -49,12 +55,14 @@ _隐式全局变量不算是真正的变量，他们是全局对象的属性成�
 
 #### 访问全局对象
 >* 浏览器中可以 *windows* 属性访问全局对象
->* 在任意层次嵌套的函数作用域内执行<br/>
-` var global = (function(){
+>* 在任意层次嵌套的函数作用域内执行
+
+```Javascript
+ var global = (function(){
     return this;
     }())
-`
-<br/>
+```
+
 *Ntote:* 在ES5 严格模式中上面代码片段不可行
 
 #### 单 var 模式
@@ -63,20 +71,21 @@ _隐式全局变量不算是真正的变量，他们是全局对象的属性成�
 >* 避免当在变量声明之前使用这个变量时产生的逻辑错误
 >* 减少潜在全局变量
 >* 代码量更少，更易优化<br/>
-`
+```Javascript
 function() func(){
     var a = 1, 
         b = 2,
         sum = a + b;
     //function body....
 }
-`
+```
 #### 声明提前：分散的 var 带来的问题
 _*变量提前：*_JavaScript 中是允许在函数的任意地方写任意多个 var 语句的，其实相当于
 在函数体顶部声明变量
 变量提前，导致当你在声明之前使用这个变量时，可能会 造成逻辑错误<br/>
 
-`//antipattern<br/>
+``` Javascript
+//antipattern
 myname = "global"; // global variable
 function func() {
 alert(myname); // "undefined"
@@ -84,49 +93,67 @@ var myname = "local";
 alert(myname); // "local"
 }
 func();
-`
-<br/>
+```
 
-上述代码等价片段：<br/>
+上述代码等价片段：
 
-`myname = "global"; // global variable
+```Javascript
+myname = "global"; // global variable
 function func() {
 var myname; // same as -> var myname = undefined;
 myname = "global"; // global variable
 function func() {
 var myname; // same as -> var myname = undefined;
-`
+```
 
 #### for 循环
 >* 一般模式：<br/>
-`
+```Javascript
 for(var i = 0;i < myarray.length;i++){
 }
-`<br/>
+```
+
 存在的问题： 每次遍历都会访问数组的length 属性,降低了代码运行效率，特别是在进行DOM 操作时，因为指向的HTMLCollection是活动对象，所以访问 length 时，总是会去查询 DOM
 >* 改进方案1， 缓存住数组长度<br/>
-`for(var i=0, max = myarray.length; i < max; i++){}`<br/>
->* 进一步改进，使用单 var 模式<br/>
-`function looper(){
+
+```Javascript
+for(var i=0, max = myarray.length; i < max; i++){
+
+}
+```
+>* 进一步改进，使用单 var 模式
+
+```Javascript
+function looper(){
     var i = 0, myarray = [], length = myarray.length;
     for(i = 0; i < max; i++){
         //do something
     }
-}`<br/>
+}
+```
 此种方式优点：提高代码一致性<br/>
 此种方式缺点：不方便重构
 >* 更进一步改进：减少一个变量（没有 max），减量循环至0（这样更高效，因为和零比较要比和非零数字或数组长度比较高效得多）<br/>
-`var i,myarray=[];
-for(i = myarray.length; i != 0; i--){}
-`<br/>
-`var myarray = [], i = myarray.length;
-while(i--){
-}`
 
+```Javascript
+//方式1
+var i,myarray=[];
+for(i = myarray.length; i != 0; i--){
+
+}
+
+//方式2
+var myarray = [], i = myarray.length;
+while(i--){
+}
+```
 #### for-in 循环
 * for-in循环并不按顺序执行，因此用 for 循环访问数组， for-in 循环遍历对象
 * 过滤原型链上的对象时使用
-`var hasOwn = Object.prototype.hasOwnProperty`
+
+```Javascript
+var hasOwn = Object.prototype.hasOwnProperty`
+```
 
 #### 不扩充内置原型
 #### Switch 模式
@@ -174,10 +201,4 @@ while(i--){
 >* 不安全的 UTF 字符
 >* 使用 void、with 和 eval
 >* 无法准确解析的正则表达式
-
-
-
-
-
-
 
